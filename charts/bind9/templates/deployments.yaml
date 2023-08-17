@@ -1,0 +1,164 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bind-primary
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: {{ .Values.primary.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: bind-primary
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: bind-primary
+    spec:
+      volumes:
+        - name: volume-etc-bind
+          projected:
+            sources:
+              - configMap:
+                  name: bind-primary-config
+              - secret:
+                  name: tsig-secret
+            defaultMode: 0777
+        - name: volume-var-bind
+          emptyDir: {}
+      initContainers:
+        - name: init-myservice
+          image: busybox
+          command:
+            - sh
+            - '-c'
+            - |
+              set -e
+              export TIMESTAMP=$(date +%s)
+              mkdir -p /var/bind/
+              cp /etc/bind/k8s.zone /var/bind/k8s.zone
+              sed "s#TSIGKEY#$TSIGKEY#g" /etc/bind/tsigkey.key.template > /var/bind/tsigkey.key
+              sed -i "s/SERIALNUMBER/$TIMESTAMP/g" /var/bind/k8s.zone'
+          volumeMounts:
+            - name: volume-etc-bind
+              mountPath: /etc/bind
+            - name: volume-var-bind
+              mountPath: /var/bind
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TSIGKEY
+              valueFrom:
+                secretKeyRef:
+                  name: tsig-secret 
+                  key: rfc2136_tsig_secret
+      containers:
+        - name: bind-primary
+          image: ubuntu/bind9:9.18-22.04_beta
+          workingDir: /var/bind
+          env:
+            - name: BIND9_USER
+              value: root
+          volumeMounts:
+            - name: volume-etc-bind
+              readOnly: true
+              mountPath: /etc/bind
+            - name: volume-var-bind
+              mountPath: /var/bind
+          imagePullPolicy: IfNotPresent
+          ports:
+          - name: dns-tcp
+            containerPort: 53
+            protocol: TCP
+          - name: dns-udp
+            containerPort: 53
+            protocol: UDP
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
+  revisionHistoryLimit: 10
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bind-secondary
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: {{ .Values.secondary.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: bind-secondary
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: bind-secondary
+    spec:
+      volumes:
+        - name: volume-etc-bind
+          projected:
+            sources:
+              - configMap:
+                  name: bind-secondary-config
+            defaultMode: 0777
+        - name: volume-var-bind
+          emptyDir: {}
+      initContainers:
+        - name: init-myservice
+          image: busybox
+          command:
+            - sh
+            - '-c'
+            - 'mkdir -p /var/bind/ && touch /var/bind/bind.conf'
+          volumeMounts:
+            - name: volume-etc-bind
+              mountPath: /etc/bind
+            - name: volume-var-bind 
+              mountPath: /var/bind
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TSIGKEY
+              valueFrom:
+                secretKeyRef:
+                  name: tsig-secret
+                  key: rfc2136_tsig_secret
+      containers:
+        - name: bind-secondary
+          image: ubuntu/bind9:9.18-22.04_beta
+          workingDir: /var/bind
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - '-c'
+              - 'sleep 10'
+            timeoutSeconds: 20
+          env:
+            - name: BIND9_USER
+              value: root # TODO
+          volumeMounts:
+            - name: volume-etc-bind
+              readOnly: true
+              mountPath: /etc/bind
+            - name: volume-var-bind
+              mountPath: /var/bind
+          imagePullPolicy: IfNotPresent
+          ports:
+          - name: dns-tcp
+            containerPort: 53
+            protocol: TCP
+          - name: dns-udp
+            containerPort: 53
+            protocol: UDP
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  revisionHistoryLimit: 10
+

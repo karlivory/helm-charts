@@ -1,0 +1,22 @@
+---
+domain: ""
+tsigKey: ""
+zone:
+  refresh: 10
+  retry: 10
+  expire: 3600
+  negativeCacheTtl: 3600
+  # passed through tpl
+  dnsRecords: []
+
+primary:
+  service:
+    clusterIP: "10.100.0.53"
+  deployment:
+    replicas: 1
+
+secondary:
+  service:
+    loadBalancerIP: ""
+  deployment:
+    replicas: 4

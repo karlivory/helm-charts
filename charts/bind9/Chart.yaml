@@ -1,0 +1,6 @@
+apiVersion: v2
+name: bind9
+description: bind9 primary-secondary (master-slave) setup
+type: application
+version: 0.1.0
+appVersion: "9.18"

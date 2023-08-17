@@ -1,0 +1,68 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bind-primary-config
+  namespace: {{ .Release.Namespace }}
+data:
+  named.conf: |
+    include "/var/bind/tsigkey.key";
+    options {
+        pid-file "/var/bind/named.pid";
+        recursion no;
+        allow-update { key tsigkey; };
+    };
+    zone "{{ tpl (.Values.domain) . }}" {
+        type master;
+        file "/var/bind/k8s.zone";
+        allow-transfer { any; };
+        update-policy {
+            grant tsigkey zonesub ANY;
+        };
+    };
+  tsigkey.key.template: |
+    key "tsigkey" {
+      algorithm hmac-sha512;
+      secret "TSIGKEY";
+    };
+  k8s.zone: |
+    ;
+    ; {{ tpl (.Values.domain) . }} DNS Domain Zone File
+    ;
+    $ORIGIN .
+    $TTL 3600
+    {{ tpl (.Values.domain) . }} IN  SOA ns.{{ tpl (.Values.domain) . }}. root.{{ tpl (.Values.domain) . }}. (
+                SERIALNUMBER  ; Serial
+                {{ .Values.zone.refresh }}            ; refresh
+                {{ .Values.zone.retry }}              ; retry
+                {{ .Values.zone.expire }}             ; expire
+                {{ .Values.zone.negativeCacheTtl }}   ; negative cache ttl
+                )
+    ;
+            NS  ns.{{ tpl (.Values.domain) . }}.
+    ;
+    $ORIGIN {{ tpl (.Values.domain) . }}.
+    ;
+    {{- range .Values.zone.dnsRecords }}
+    {{ tpl .name $ }}    IN  {{ tpl .type $ }}   {{ tpl .value $ }}
+    {{- end }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bind-secondary-config
+  namespace: {{ .Release.Namespace }}
+data:
+  named.conf: |
+    options {
+        pid-file "/var/bind/named.pid";
+        recursion no;
+    };
+    zone "{{ tpl (.Values.domain) . }}" {
+        type slave;
+        file "/var/bind/k8s.zone";
+        masters { {{ .Values.primary.service.clusterIP }}; };
+        min-refresh-time 10;
+    };
+
