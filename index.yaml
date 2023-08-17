@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  bind9:
+  - apiVersion: v2
+    appVersion: "9.18"
+    created: "2023-08-17T10:11:53.812913544Z"
+    description: bind9 primary-secondary (master-slave) setup
+    digest: f3406732daa07b765fd2d282f8d2df50cceec5c16356be271e914cac3cc84b37
+    name: bind9
+    type: application
+    urls:
+    - https://github.com/karlivory/helm-charts/releases/download/bind9-0.1.0/bind9-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-08-17T10:11:53.812922844Z"
