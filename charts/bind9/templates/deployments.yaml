@@ -40,7 +40,7 @@ spec:
               mkdir -p /var/bind/
               cp /etc/bind/k8s.zone /var/bind/k8s.zone
               sed "s#TSIGKEY#$TSIGKEY#g" /etc/bind/tsigkey.key.template > /var/bind/tsigkey.key
-              sed -i "s/SERIALNUMBER/$TIMESTAMP/g" /var/bind/k8s.zone'
+              sed -i "s/SERIALNUMBER/$TIMESTAMP/g" /var/bind/k8s.zone
           volumeMounts:
             - name: volume-etc-bind
               mountPath: /etc/bind
