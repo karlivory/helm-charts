@@ -11,6 +11,9 @@ zone:
 
 primary:
   service:
+    # The bind9 primary (master) server needs to have a static ip, since 
+    # /etc/bind/named.conf does not accept dns names in its "masters { <master-ip> };"
+    # Make sure this value is within your kubernetes internal-ip range.
     clusterIP: "10.100.0.53"
   deployment:
     replicas: 1

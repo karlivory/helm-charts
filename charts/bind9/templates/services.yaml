@@ -32,7 +32,7 @@ metadata:
   namespace: bind9
 spec:
   type: ClusterIP
-  clusterIP: "{{ .Values.bind9.primaryClusterIP }}"
+  clusterIP: "{{ .Values.primary.service.clusterIP }}"
   ports:
     - name: dns-tcp
       protocol: TCP
