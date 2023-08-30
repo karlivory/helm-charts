@@ -10,6 +10,7 @@ zone:
   dnsRecords: []
 
 primary:
+  annotations: {}
   service:
     # The bind9 primary (master) server needs to have a static ip, since 
     # /etc/bind/named.conf does not accept dns names in its "masters { <master-ip> };"
@@ -19,6 +20,7 @@ primary:
     replicas: 1
 
 secondary:
+  annotations: {}
   service:
     loadBalancerIP: ""
   deployment:

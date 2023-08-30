@@ -4,9 +4,9 @@ kind: Service
 metadata:
   name: bind-primary
   namespace: "{{ .Release.Namespace }}"
-  {{- with .Values.primary.service.annotations }}
+  {{- if .Values.primary.service.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
+    {{- toYaml .Values.primary.service.annotations | nindent 4 }}
   {{- end }}
 spec:
   type: ClusterIP
@@ -29,9 +29,9 @@ kind: Service
 metadata:
   name: bind-secondary
   namespace: "{{ .Release.Namespace }}"
-  {{- with .Values.secondary.service.annotations }}
+  {{- if .Values.secondary.service.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
+    {{- toYaml .Values.secondary.service.annotations | nindent 4 }}
   {{- end }}
 spec:
   type: LoadBalancer
