@@ -3,6 +3,16 @@ entries:
   bind9:
   - apiVersion: v2
     appVersion: "9.18"
+    created: "2023-09-06T12:12:06.112088647Z"
+    description: bind9 primary-secondary (master-slave) setup
+    digest: 6d1396ccb35a7f44e4c7144fc2afaf2a81dd2238ccb9ab70ad141151768dad99
+    name: bind9
+    type: application
+    urls:
+    - https://github.com/karlivory/helm-charts/releases/download/bind9-0.1.5/bind9-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
+    appVersion: "9.18"
     created: "2023-08-30T09:34:38.91221292Z"
     description: bind9 primary-secondary (master-slave) setup
     digest: 83ae7991e42ef01790753f6fe1336785a11a9ef963dc702bd6aeb3c849014720
@@ -62,4 +72,4 @@ entries:
     urls:
     - https://github.com/karlivory/helm-charts/releases/download/k8s-on-prem-core-0.1.1/k8s-on-prem-core-0.1.1.tgz
     version: 0.1.1
-generated: "2023-09-06T09:51:13.728699008Z"
+generated: "2023-09-06T12:12:06.112111447Z"
