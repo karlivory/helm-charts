@@ -2,10 +2,10 @@
 domain: ""
 tsigKey: ""
 zone:
-  refresh: 10
-  retry: 10
-  expire: 1209600
-  negativeCacheTtl: 300
+  refresh: "10"
+  retry: "10"
+  expire: "1209600"
+  negativeCacheTtl: "300"
   # passed through tpl
   dnsRecords: []
 
