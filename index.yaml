@@ -51,4 +51,15 @@ entries:
     urls:
     - https://github.com/karlivory/helm-charts/releases/download/bind9-0.1.0/bind9-0.1.0.tgz
     version: 0.1.0
-generated: "2023-08-30T09:34:38.91222832Z"
+  k8s-on-prem-core:
+  - apiVersion: v2
+    appVersion: "0.1"
+    created: "2023-09-06T09:51:13.728673208Z"
+    description: core apps to deploy k8s on premises
+    digest: de983b3cb030473cb5573c77164dc2da1bc33541383f9e690c57df6956a51bc1
+    name: k8s-on-prem-core
+    type: application
+    urls:
+    - https://github.com/karlivory/helm-charts/releases/download/k8s-on-prem-core-0.1.1/k8s-on-prem-core-0.1.1.tgz
+    version: 0.1.1
+generated: "2023-09-06T09:51:13.728699008Z"
