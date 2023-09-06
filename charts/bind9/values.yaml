@@ -4,8 +4,8 @@ tsigKey: ""
 zone:
   refresh: 10
   retry: 10
-  expire: 3600
-  negativeCacheTtl: 3600
+  expire: 1209600
+  negativeCacheTtl: 300
   # passed through tpl
   dnsRecords: []
 
